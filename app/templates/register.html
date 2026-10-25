@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Register: {{ event.name }}{% endblock %}
+{% block content %}
+<h1>Register for {{ event.name }}</h1>
+<p>{{ event.game_name }} · {{ event.format }} · {{ event.start_utc | local_day(event.tz) }}, {{ event.start_utc | local_time(event.tz) }}</p>
+{% if error or reason %}<p class="error">{{ error or reason }}</p>{% endif %}
+{% if not reason %}
+<form method="post">
+  <label>Your name <input name="name" required maxlength="100" autofocus></label>
+  <button type="submit">Register</button>
+</form>
+{% endif %}
+{% endblock %}

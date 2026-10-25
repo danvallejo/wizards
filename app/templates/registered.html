@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Registered{% endblock %}
+{% block content %}
+<h1>You're in!</h1>
+<p>{{ name }} is registered for {{ event.name }}, {{ event.start_utc | local_day(event.tz) }} at {{ event.start_utc | local_time(event.tz) }}.</p>
+<p><a href="/events/{{ event.id }}">Back to event</a></p>
+{% endblock %}

@@ -198,3 +198,5 @@ Skipped: mutmut, hypothesis (timebox).
 - 2026-10-25 (owner instruction, mid slice 2): **commit authorization withdrawn.** From
   slice 2 on, each slice is staged, then Claude stops and waits for the owner's review
   and go-ahead before committing. Codex review still runs before staging is handed over.
+- 2026-10-25 (before slice 4): slices 4 and 5 swap. Registration + capacity lands before
+  QR + .ics, so the QR/registration link on the event page never points at a 404.

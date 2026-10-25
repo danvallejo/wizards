@@ -1,8 +1,11 @@
+from sqlite3 import Row
+
 from flask import Blueprint, abort, current_app, redirect, render_template, request
 from werkzeug.wrappers import Response
 
 from app.db import get_db
 from app.events import agenda, create_event, get_event, list_events, validate_event
+from app.registrations import RegistrationRejected, register, unavailable_reason
 
 bp = Blueprint("events", __name__)
 
@@ -50,7 +53,33 @@ def post_event() -> Response | tuple[str, int]:
 
 @bp.get("/events/<int:event_id>")
 def show_event(event_id: int) -> str:
+    return render_template("event.html", event=_event_or_404(event_id))
+
+
+def _event_or_404(event_id: int) -> Row:
     event = get_event(get_db(), event_id)
     if event is None:
         abort(404)
-    return render_template("event.html", event=event)
+    return event
+
+
+@bp.get("/events/<int:event_id>/register")
+def register_form(event_id: int) -> str:
+    event = _event_or_404(event_id)
+    reason = unavailable_reason(event, current_app.config["NOW"]())
+    return render_template("register.html", event=event, reason=reason, error=None)
+
+
+@bp.post("/events/<int:event_id>/register")
+def post_registration(event_id: int) -> tuple[str, int]:
+    event = _event_or_404(event_id)
+    clock = current_app.config["NOW"]
+    try:
+        name = register(get_db(), event_id, request.form.get("name", ""), clock)
+    except RegistrationRejected as e:
+        event = _event_or_404(event_id)  # fresh count: hide the form if now full/closed
+        reason = unavailable_reason(event, clock())
+        return render_template(
+            "register.html", event=event, reason=reason, error=e.message
+        ), e.status
+    return render_template("registered.html", event=event, name=name), 201

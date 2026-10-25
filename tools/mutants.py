@@ -64,8 +64,8 @@ MUTANTS: list[tuple[str, str, str, str]] = [
     ),
     (
         "app/views.py",
-        '    if event is None:\n        abort(404)\n    return render_template("event.html"',
-        '    return render_template("event.html"',
+        "    if event is None:\n        abort(404)\n    return event",
+        "    return event",
         "unknown event id not a 404",
     ),
     (
@@ -91,6 +91,48 @@ MUTANTS: list[tuple[str, str, str, str]] = [
         'for event in sorted(events, key=lambda e: str(e["start_utc"])):',
         "for event in events:",
         "events within a day not sorted by start",
+    ),
+    (
+        "app/registrations.py",
+        'db.execute("BEGIN IMMEDIATE")',
+        'db.execute("BEGIN")',
+        "seat check not under the write lock (last-seat race)",
+    ),
+    (
+        "app/registrations.py",
+        'if event["registered"] >= event["capacity"]:',
+        'if event["registered"] > event["capacity"]:',
+        "capacity check off by one (overbooks by one)",
+    ),
+    (
+        "app/registrations.py",
+        "        if existing is not None:\n",
+        "        if False:\n",
+        "duplicate check dropped (UNIQUE backstop only)",
+    ),
+    (
+        "app/registrations.py",
+        "        if closed:\n",
+        "        if False:\n",
+        "registration allowed after start",
+    ),
+    (
+        "app/registrations.py",
+        "(event_id, name, name.casefold(), now.isoformat())",
+        "(event_id, name, name, now.isoformat())",
+        "duplicate key not case-normalized",
+    ),
+    (
+        "app/registrations.py",
+        'name = " ".join(raw.split())',
+        "name = raw",
+        "whitespace not normalized",
+    ),
+    (
+        "app/registrations.py",
+        '    db.execute("BEGIN IMMEDIATE")\n    try:\n        now = clock()\n',
+        '    now = clock()\n    db.execute("BEGIN IMMEDIATE")\n    try:\n',
+        "clock read before taking the write lock",
     ),
 ]
 
