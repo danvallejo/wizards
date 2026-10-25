@@ -206,6 +206,42 @@ MUTANTS: list[tuple[str, str, str, str]] = [
         '    game = games.get(form.get("game", "")) if len(form.get("game", "")) < 8 else None\n',
         "core logic only accepts the games it already knows",
     ),
+    (
+        "app/__init__.py",
+        'if ip != detected and not ip.startswith("127.")',
+        "if ip != detected",
+        "loopback listed as a phone-reachable address",
+    ),
+    (
+        "app/__init__.py",
+        'if ip != detected and not ip.startswith("127.")',
+        'if not ip.startswith("127.")',
+        "QR address repeated in the other-addresses list",
+    ),
+    (
+        "app/__init__.py",
+        "    if others:\n",
+        "    if True:\n",
+        "empty other-addresses line printed",
+    ),
+    (
+        "app/__init__.py",
+        "    others: list[str] = []\n",
+        '    others: list[str] = ["http://x:8000"]\n',
+        "address list shown even when BASE_URL is set",
+    ),
+    (
+        "app/__init__.py",
+        'for ip in sorted(set(app.config["LIST_IPS"]()))',
+        'for ip in app.config["LIST_IPS"]()',
+        "other addresses unsorted",
+    ),
+    (
+        "app/qr.py",
+        "        return []\n",
+        '        return ["127.0.0.1"]\n',
+        "address lookup failure not handled",
+    ),
 ]
 
 

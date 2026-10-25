@@ -39,22 +39,27 @@ If you set `DATABASE` to a custom path, delete that file instead.
 
 ### Scanning the QR code from a phone
 
-The QR code on each event page points at `http://<this machine's LAN IP>:8000/...`,
-detected at startup, and the server prints the address it chose:
+The QR code on each event page points at `http://<this machine's IP>:8000/...`. The IP
+is detected at startup by following the default network route, and the server prints
+what it chose, plus the machine's other addresses:
 
 ```
-QR codes will point to http://10.0.0.101:8000. If phones can't open that address, set BASE_URL (see README).
+QR codes will point to http://10.2.0.2:8000. If phones can't open that address, set BASE_URL (see README).
+Other addresses for this machine: http://10.0.0.101:8000, http://10.0.0.182:8000. If phones can't open the QR link, restart with BASE_URL set to one that phones can open.
 ```
 
-With the server on `0.0.0.0` (as above) and the phone on the same Wi-Fi, scanning just
-works. Detection follows the default network route, so with a VPN on it picks the VPN's
-address, which phones can't reach. In that case, or with Docker or several network
-interfaces, set the address explicitly (find your Wi-Fi IP with `ipconfig getifaddr en0`
-on macOS):
+With no VPN, the detected address is your Wi-Fi/Ethernet address and scanning just works
+(phone on the same Wi-Fi, server on `0.0.0.0` as above). **With a VPN on, the detected
+address is the VPN's, and phones can't reach it.** That happened in testing: the QR
+pointed at `10.2.0.2` and the phone couldn't connect. Restart with one of the other
+addresses (on macOS, `ipconfig getifaddr en0` gives the Wi-Fi one):
 
 ```sh
-BASE_URL=http://192.168.1.20:8000 .venv/bin/flask --app app run --host 0.0.0.0 --port 8000
+BASE_URL=http://10.0.0.101:8000 .venv/bin/flask --app app run --host 0.0.0.0 --port 8000
 ```
+
+Put `BASE_URL=...` on the same line as the command, or `export` it first. On a line of
+its own it sets a shell variable the server never sees.
 
 ### Configuration
 
@@ -135,9 +140,10 @@ the schema, still with no per-game `if`.
 - **Heuristics:** the QR base URL is the LAN IP detected at startup (`BASE_URL`
   overrides it). Duplicate detection is by name only, so two people with the same name
   need to tell themselves apart (e.g. "Alex K").
-- **Checked only by tests, not by hand:** importing the `.ics` into Google Calendar or
-  Outlook (tests parse it back with `icalendar`), and scanning the QR with a phone (tests
-  rebuild the QR from the expected URL and require an exact match).
+- **Checked by hand:** the `.ics` imports into Apple Calendar with the right title,
+  times and location, and a phone scan opens the registration form when `BASE_URL` is
+  set. **Not tried:** Google Calendar and Outlook import (tests parse the file back with
+  `icalendar`, which doesn't prove those apps accept it).
 - **Next:** players cancelling their own registration plus a waitlist that promotes the
   next player, organizer login, a month view, real migrations, and rate limiting on
   registration.

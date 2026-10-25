@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 
 from icalendar import Calendar
 
-from app.qr import detect_lan_ip, qr_svg
+from app.qr import detect_lan_ip, host_addresses, qr_svg
 from tests.conftest import create_event
 
 
@@ -131,3 +131,37 @@ def test_startup_prints_base_url_when_set(make_app, capsys):
 def test_event_page_hints_base_url_under_qr(client):
     html = page(client, create_event(client))
     assert "set BASE_URL" in html
+
+
+def test_startup_lists_other_addresses(make_app, capsys):
+    make_app(
+        DETECT_IP=lambda: "10.2.0.2",
+        LIST_IPS=lambda: ["10.0.0.182", "127.0.0.1", "10.2.0.2", "10.0.0.101"],
+    )
+    err = capsys.readouterr().err
+    assert "QR codes will point to http://10.2.0.2:8000" in err
+    assert "Other addresses for this machine: http://10.0.0.101:8000, http://10.0.0.182:8000" in err
+    assert "restart with BASE_URL set to one that phones can open" in err
+
+
+def test_no_other_addresses_line_when_none_left(make_app, capsys):
+    make_app(DETECT_IP=lambda: "10.2.0.2", LIST_IPS=lambda: ["127.0.0.1", "10.2.0.2"])
+    assert "Other addresses" not in capsys.readouterr().err
+
+
+def test_no_address_list_when_base_url_set(make_app, capsys):
+    make_app(BASE_URL="http://10.0.0.101:8000", LIST_IPS=lambda: ["10.0.0.182"])
+    assert "Other addresses" not in capsys.readouterr().err
+
+
+def test_host_addresses_returns_ipv4_strings():
+    for ip in host_addresses():
+        assert re.fullmatch(r"\d{1,3}(\.\d{1,3}){3}", ip)
+
+
+def test_host_addresses_empty_when_lookup_fails(monkeypatch):
+    def broken(*args, **kwargs):
+        raise socket.gaierror("lookup failed")
+
+    monkeypatch.setattr(socket, "getaddrinfo", broken)
+    assert host_addresses() == []

@@ -41,7 +41,7 @@ Just reject it. It happens two nights a year. We can fix that later if needed.
 
 # AI Framework
 ## Tools
-Used claude code with /old-coder plugin.
+Used claude code with /old-coder plugin. I didn't use PDLC-os because I was worried that brainstorming would have taken up the entire time by answering the storming portion of the lifecycle.
 
 Prompt:
 

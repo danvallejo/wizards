@@ -210,3 +210,32 @@ Skipped: mutmut, hypothesis (timebox).
   hints at BASE_URL under the QR. Real-run reachability of LAN addresses can't be tested
   from Claude's sandbox (all non-loopback addresses time out), so `tools/real_run.py`
   checks the QR host equals the detected IP and follows the path via loopback.
+- 2026-10-25 (owner manual test): **calendar import verified in Apple Calendar** (title,
+  start/end, location correct). Google Calendar / Outlook not tried. **Phone QR scan
+  failed with the default address** (VPN tunnel 10.2.0.2, unreachable from the phone) and
+  **worked with `BASE_URL=http://10.0.0.101:8000`**. Owner chose to show every candidate
+  address at startup. Change below approved by the owner ("approve"):
+
+  ```gherkin
+  Scenario: startup lists other addresses for this machine
+    Given BASE_URL is unset, the default-route IP is 10.2.0.2
+    And this machine's hostname resolves to 10.0.0.101 and 10.0.0.182
+    When the app starts
+    Then it prints "QR codes will point to http://10.2.0.2:8000"
+    And it prints "Other addresses for this machine: http://10.0.0.101:8000,
+        http://10.0.0.182:8000"
+    And it says to restart with BASE_URL set to one that phones can open
+
+  Scenario: no other addresses → message as before
+    Given hostname lookup fails, or returns only the QR address or loopback (127.x)
+    Then no "Other addresses" line is printed, and startup does not fail
+
+  Scenario: BASE_URL set → no address list (the organizer already chose)
+  ```
+
+  Mechanism: stdlib `socket.getaddrinfo(socket.gethostname(), None, AF_INET)`, minus
+  loopback and the QR address; any `OSError` → empty list. No new dependency, no
+  subprocess. The lookup is injected in tests. Known limits: no interface names; on some
+  Linux setups the hostname resolves only to 127.0.1.1 → empty list; with a broken
+  hostname/DNS setup the lookup can delay startup. README and EVIDENCE get the manual
+  test results.

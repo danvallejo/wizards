@@ -24,3 +24,17 @@ def detect_lan_ip() -> str:
             return str(s.getsockname()[0])
     except OSError:
         return "127.0.0.1"
+
+
+def host_addresses() -> list[str]:
+    """IPv4 addresses this machine's hostname resolves to (e.g. Wi-Fi and Ethernet).
+
+    Shown at startup as BASE_URL candidates when the default-route address (a VPN,
+    say) isn't reachable from phones. Limit: on some Linux setups the hostname only
+    resolves to 127.0.1.1, so the list is empty.
+    """
+    try:
+        infos = socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET)
+    except OSError:
+        return []
+    return [str(info[4][0]) for info in infos]

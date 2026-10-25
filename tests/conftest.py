@@ -21,6 +21,7 @@ def make_app(tmp_path: Path):
             "NOW": lambda: NOW,
             "BASE_URL": "",  # ignore any BASE_URL in the developer's environment
             "DETECT_IP": lambda: "10.0.0.5",
+            "LIST_IPS": lambda: [],
         }
         config.update(overrides)
         return create_app(config)
