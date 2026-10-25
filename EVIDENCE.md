@@ -3,17 +3,18 @@
 - **Spec approval:** obtained from the repo owner ("approved", twice: the second time for
   the revision after Codex's first spec review). Spec: `SPEC.md`, committed in `328e7fb`.
   Later changes are listed in its `## Revisions` section.
-- **Source state:** git tree `6e540c2e843e61e5d839a248b7cd0a99ce6bcf8a` = commit
-  `6b76dab` plus the slice-7 changes (startup QR message, `tools/real_run.py`, seed in the
-  gauntlet). It is committed as the commit just before the one adding this file; check it
-  with `git rev-parse HEAD~1^{tree}` from the commit that adds this file. This file itself
-  is not part of the checked tree. The working tree had no unstaged or untracked files.
-- **Run at:** 2026-10-25T19:37:08Z, on macOS (Darwin 25.6.0) with Python 3.14.7.
+- **Source state:** git tree `60c12732edee43f9c12923fa9ad82f7a47374989` = commit
+  `a43fdb3` plus the "other addresses" startup list and the owner's manual test results.
+  It is committed as the commit just before the one updating this file; check it with
+  `git rev-parse HEAD~1^{tree}` from that commit. The tree includes the previous version
+  of this file; only the numbers below changed. The working tree had no unstaged or
+  untracked files. (The previous report verified tree `6e540c2`, commit `cf0ebcc`.)
+- **Run at:** 2026-10-25T19:57:33Z, on macOS (Darwin 25.6.0) with Python 3.14.7.
 - **Toolchain:** exact pins in `requirements.txt` / `requirements-dev.txt` (Flask 3.1.3,
   qrcode 8.2, icalendar 7.3.0, pytest 9.1.1, pytest-cov 7.1.0, pytest-randomly 5.0.0,
   mypy 2.4.0, ruff 0.17.2, pip-audit 2.10.1). Reviewer: codex-cli 0.163.0.
 - **Entry point:** `tools/gauntlet.sh` runs every layer below except `pip-audit`, which
-  needs the network. To repeat a test order: `SEED=6779 tools/gauntlet.sh`.
+  needs the network. To repeat a test order: `SEED=30106 tools/gauntlet.sh`.
 - **Independent verification:** not performed (Tier 2). Codex reviewed every commit's
   staged diff before it was made. That is a second model reading the code, not a
   fresh-context verifier attacking the finished work.
@@ -40,8 +41,9 @@ All rows are from the final run. Test files are under `tests/`.
 | Entry shows summary, links to event | `test_calendar.py::test_entry_shows_summary_and_links_to_event` | pass |
 | No events → "No events scheduled" | `test_calendar.py::test_no_events` | pass |
 | Event page details, count, min-players status, QR, .ics link | `test_event_page.py::*`, `test_registration.py::test_min_players_status_flips_when_reached`, `test_invite_and_qr.py::test_event_page_links_invite` | pass |
-| QR encodes the registration URL | `test_invite_and_qr.py::test_qr_encodes_detected_lan_url_by_default`, `::test_qr_uses_base_url_when_set`, `::test_detected_ip_is_used_at_startup`, `::test_detect_lan_ip_*`, `::test_startup_prints_*` | pass |
-| .ics download | `test_invite_and_qr.py::test_ics_headers`, `::test_ics_content`, `::test_ics_uid_is_stable_and_unique`, `::test_ics_uid_unique_across_databases`, `::test_ics_times_use_utc` | pass |
+| QR encodes the registration URL | `test_invite_and_qr.py::test_qr_encodes_detected_lan_url_by_default`, `::test_qr_uses_base_url_when_set`, `::test_detected_ip_is_used_at_startup`, `::test_detect_lan_ip_*`, `::test_startup_prints_*`; **owner's phone scan** (below) | pass |
+| Startup lists other addresses (revision) | `test_invite_and_qr.py::test_startup_lists_other_addresses`, `::test_no_other_addresses_line_when_none_left`, `::test_no_address_list_when_base_url_set`, `::test_host_addresses_*` | pass |
+| .ics download | `test_invite_and_qr.py::test_ics_headers`, `::test_ics_content`, `::test_ics_uid_is_stable_and_unique`, `::test_ics_uid_unique_across_databases`, `::test_ics_times_use_utc`; **owner's Apple Calendar import** (below) | pass |
 | Unknown event id → 404 (page, .ics, register) | `test_event_page.py::test_unknown_event_is_404`, `test_invite_and_qr.py::test_ics_unknown_event_404`, `test_registration.py::test_register_unknown_event_404` | pass |
 | Register → success page, count increments | `test_registration.py::test_register_success`, `::test_event_page_counts_registrations_and_links_form` | pass |
 | Event full → 409, count unchanged | `test_registration.py::test_full_event_rejected`, `::test_rejected_post_on_full_event_hides_form` | pass |
@@ -63,15 +65,15 @@ All rows are from the final run. Test files are under `tests/`.
 | Layer | Command | Result |
 |---|---|---|
 | Lint | `ruff check .` | All checks passed |
-| Format | `ruff format --check .` | 27 files already formatted |
+| Format | `ruff format --check .` | 28 files already formatted |
 | Types | `mypy` (strict, `app` + `seed`) | Success: no issues found in 10 source files |
-| Tests | `pytest -p randomly --randomly-seed=6779` | 118 passed, 0 failed (3.13 s) |
-| Coverage | `--cov=app --cov=seed --cov-branch --cov-fail-under=100` | 356/356 statements, 70/70 branches, 100%. All code is new, so changed-line coverage is the same thing |
+| Tests | `pytest -p randomly --randomly-seed=30106` | 123 passed, 0 failed (2.88 s) |
+| Coverage | `--cov=app --cov=seed --cov-branch --cov-fail-under=100` | 367/367 statements, 72/72 branches, 100%. All code is new, so changed-line coverage is the same thing |
 | No game names in core | `tools/check_no_game_names.py` | scanned 16 files for 6 game words: 0 hits |
-| Mutation | `tools/mutants.py` (manual, 32 hand-written mutants) | 32/32 killed |
+| Mutation | `tools/mutants.py` (manual, 38 hand-written mutants) | 38/38 killed |
 | Real execution | `tools/real_run.py` | REAL RUN PASSED (13 checks, listed below) |
 | Supply chain | `pip-audit -r requirements.txt` | No known vulnerabilities found (exit 0). Runtime licenses: BSD (Flask, Werkzeug, Jinja2, itsdangerous, click, MarkupSafe, qrcode, icalendar), MIT (blinker, six), Apache-2.0 (tzdata), dual (python-dateutil) |
-| Secrets | `git ls-files -z \| xargs -0 grep -nIiE "(api[_-]?key\|secret\|password\|token\|BEGIN … PRIVATE)"` | no matches |
+| Secrets | `git ls-files -z \| xargs -0 grep -nIiE "(api[_-]?key\|secret\|password\|token\|BEGIN … PRIVATE)"` | 1 match: the Secrets row of this table, which quotes the scan's own pattern. No secrets. |
 | Suite health | random order on every gauntlet run; race test repeated 5× separately | stable; no flaky failures seen |
 
 New dependencies, each justified in `SPEC.md`: `flask`, `qrcode`, `icalendar` (runtime);
@@ -97,7 +99,9 @@ not normalized · 20 clock read before lock · 21 QR encodes site root · 22 BAS
 ignored · 23 trailing slash gives `//` · 24 no-network fallback broken · 25 .ics end =
 start · 26 .ics UID not per event · 27 .ics location missing · 28 event uid not random ·
 29 seed duplicates on second run · 30 game name not snapshotted · 31 min_players not
-snapshotted · 32 core accepts only known games.
+snapshotted · 32 core accepts only known games · 33 loopback listed as reachable ·
+34 QR address repeated in the list · 35 empty list line printed · 36 list shown despite
+BASE_URL · 37 list unsorted · 38 address lookup failure not handled.
 
 ## Negative controls (each checker shown to fail on a known-bad input)
 
@@ -123,15 +127,28 @@ three edits, which the single-replacement runner can't apply, so it was run once
   - *QR correctness:* tests rebuild the QR from the expected URL and require an exact
     match. No decoder (zbar) is installed, so this can't catch a bug inside the `qrcode`
     library itself.
-  - *.ics import:* tests parse the file back with `icalendar`. This doesn't show that
-    Google Calendar or Outlook accept it.
+  - *.ics import:* tests parse the file back with `icalendar`. The owner imported one by
+    hand into **Apple Calendar**: title, start/end and location were correct. **Google
+    Calendar and Outlook were not tried.**
   - *LAN reachability:* every non-loopback address timed out from Claude's command
     sandbox, so the real run follows the QR's path through `127.0.0.1` and checks only
     that the QR's host is the detected IP.
 
-**Manual checks for the owner (not done):**
-1. Scan an event's QR with a phone on the same Wi-Fi (with `BASE_URL` set if a VPN is on).
-2. Import a downloaded `.ics` into Google Calendar and Outlook.
+**Manual checks by the owner (2026-10-25):**
+1. *Phone QR scan, default address:* **failed.** With the VPN on, the QR pointed at
+   `http://10.2.0.2:8000` (VPN tunnel) and the phone couldn't connect.
+2. *Phone QR scan, `BASE_URL=http://10.0.0.101:8000`:* **worked.** (The first attempt
+   still showed 10.2.0.2: `BASE_URL` hadn't reached the server process, most likely set
+   on its own line without `export`. Claude's one-line run of the same command printed
+   10.0.0.101.) This led to the "other addresses" startup list.
+3. *.ics into Apple Calendar:* **worked.** Google Calendar and Outlook were not tried.
+
+Screenshots from the owner's phone (iOS, 12:57–12:58): the event page opened from
+`http://10.0.0.101:8000` with "2 / 8 registered" and its QR
+([screenshots/Screenshot 2026-10-25 at 12.58.10 PM.png](screenshots/Screenshot%202026-10-25%20at%2012.58.10%E2%80%AFPM.png)),
+and the `.ics` imported into Apple Calendar: 10 PM local (5 AM GMT), location, and
+registration link
+([screenshots/Screenshot 2026-10-25 at 12.57.50 PM.png](screenshots/Screenshot%202026-10-25%20at%2012.57.50%E2%80%AFPM.png)).
 
 ## Dismissed review findings
 
@@ -165,6 +182,10 @@ sharing one SQLite file. It says nothing about several app servers or another da
   picks the VPN tunnel (`utun7` 10.2.0.2), not Wi-Fi (`en0` 10.0.0.101). The owner chose
   to keep detection and make it visible: the server prints the QR target at startup and
   the event page hints at `BASE_URL` (see SPEC revisions).
+- **During the manual test, Claude ran `pkill -f "flask --app app run …"`** to clean up
+  its own check, a pattern that also matches the owner's server. A follow-up check found
+  no server running, so whether it stopped the owner's server is unknown. Since then
+  Claude stops processes only by exact PID.
 - **Commit authorization changed partway through:** commits 1–2 were made under an
   up-front authorization; from slice 2 on, the owner reviewed each staged commit first.
 - **Spec revisions** are all recorded in `SPEC.md`: slice reorders (event page into
