@@ -7,8 +7,8 @@ PY=.venv/bin
 echo "== lint";      $PY/ruff check .
 echo "== format";    $PY/ruff format --check .
 echo "== types";     $PY/mypy
-echo "== tests (random order, 100% line+branch coverage of app/)"
-$PY/pytest -q -p randomly --cov=app --cov-branch --cov-report=term-missing --cov-fail-under=100
+echo "== tests (random order, 100% line+branch coverage of app/ and seed.py)"
+$PY/pytest -q -p randomly --cov=app --cov=seed --cov-branch --cov-report=term-missing --cov-fail-under=100
 echo "== no game names in core"; $PY/python tools/check_no_game_names.py
 echo "== mutation";  $PY/python tools/mutants.py
 echo "GAUNTLET PASSED"

@@ -182,6 +182,30 @@ MUTANTS: list[tuple[str, str, str, str]] = [
         "            str(event.start),\n",
         "event uid not random (collides across databases)",
     ),
+    (
+        "seed.py",
+        '        if db.execute("SELECT count(*) FROM events").fetchone()[0]:\n',
+        "        if False:\n",
+        "seed duplicates demo data on a second run",
+    ),
+    (
+        "app/events.py",
+        "            event.game.name,\n",
+        "            event.game.id,\n",
+        "game display name not snapshotted on the event",
+    ),
+    (
+        "app/events.py",
+        "            event.game.min_players,\n",
+        "            4,\n",
+        "min_players not snapshotted from the template",
+    ),
+    (
+        "app/events.py",
+        '    game = games.get(form.get("game", ""))\n',
+        '    game = games.get(form.get("game", "")) if len(form.get("game", "")) < 8 else None\n',
+        "core logic only accepts the games it already knows",
+    ),
 ]
 
 

@@ -12,6 +12,7 @@ select = ["E", "F", "W", "I", "B", "UP"]
 [tool.mypy]
 strict = true
 packages = ["app"]
+modules = ["seed"]
 
 [[tool.mypy.overrides]]
 module = ["qrcode", "qrcode.*"]
@@ -22,3 +23,6 @@ testpaths = ["tests"]
 pythonpath = ["."]
 # Any warning fails the suite, including unclosed sqlite connections (ResourceWarning).
 filterwarnings = ["error"]
+
+[tool.coverage.report]
+exclude_also = ['if __name__ == "__main__":']
