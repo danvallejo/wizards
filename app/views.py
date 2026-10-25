@@ -2,7 +2,7 @@ from flask import Blueprint, abort, current_app, redirect, render_template, requ
 from werkzeug.wrappers import Response
 
 from app.db import get_db
-from app.events import create_event, get_event, validate_event
+from app.events import agenda, create_event, get_event, list_events, validate_event
 
 bp = Blueprint("events", __name__)
 
@@ -23,6 +23,11 @@ def _new_event_form(
     return render_template(
         "new_event.html", game=game, values={**defaults, **values}, errors=errors
     ), status
+
+
+@bp.get("/")
+def calendar() -> str:
+    return render_template("calendar.html", days=agenda(list_events(get_db())))
 
 
 @bp.get("/events/new")

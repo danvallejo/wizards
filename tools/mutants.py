@@ -74,6 +74,24 @@ MUTANTS: list[tuple[str, str, str, str]] = [
         "",
         "local end-time range not checked",
     ),
+    (
+        "app/events.py",
+        'days.setdefault(_local(event["start_utc"], event["tz"]).date(), [])',
+        'days.setdefault(parse_iso_utc(event["start_utc"]).date(), [])',
+        "calendar groups by UTC date, not the event's local date",
+    ),
+    (
+        "app/events.py",
+        "for d in sorted(days)]",
+        "for d in days]",
+        "calendar day headings not sorted",
+    ),
+    (
+        "app/events.py",
+        'for event in sorted(events, key=lambda e: str(e["start_utc"])):',
+        "for event in events:",
+        "events within a day not sorted by start",
+    ),
 ]
 
 

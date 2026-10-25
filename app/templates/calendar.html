@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Event calendar{% endblock %}
+{% block content %}
+<h1>Event calendar</h1>
+{% for day, events in days %}
+<h2>{{ day }}</h2>
+<ul>
+  {% for e in events %}
+  <li>
+    {{ e.start_utc | local_time(e.tz) }}
+    <a href="/events/{{ e.id }}">{{ e.name }}</a>
+    — {{ e.game_name }} · {{ e.format }} · {{ e.registered }} / {{ e.capacity }}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No events scheduled. <a href="/events/new">Create one</a>.</p>
+{% endfor %}
+{% endblock %}

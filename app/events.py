@@ -1,7 +1,7 @@
 import sqlite3
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from app.games import GameTemplate
@@ -34,10 +34,13 @@ def _local(utc_text: str, tz_name: str) -> datetime:
     return parse_iso_utc(utc_text).astimezone(ZoneInfo(tz_name))
 
 
+def _day_label(d: date) -> str:
+    return f"{d:%a %b} {d.day}, {d.year}"
+
+
 def local_day(utc_text: str, tz_name: str) -> str:
     """'Fri Nov 6, 2026' in the event's own timezone."""
-    d = _local(utc_text, tz_name)
-    return f"{d:%a %b} {d.day}, {d.year}"
+    return _day_label(_local(utc_text, tz_name))
 
 
 def local_time(utc_text: str, tz_name: str) -> str:
@@ -161,10 +164,28 @@ def create_event(db: sqlite3.Connection, event: NewEvent) -> int:
     return cur.lastrowid
 
 
+_SELECT_EVENTS = (
+    "SELECT e.*, (SELECT count(*) FROM registrations r WHERE r.event_id = e.id)"
+    " AS registered FROM events e"
+)
+
+
 def get_event(db: sqlite3.Connection, event_id: int) -> sqlite3.Row | None:
-    row: sqlite3.Row | None = db.execute(
-        "SELECT e.*, (SELECT count(*) FROM registrations r WHERE r.event_id = e.id)"
-        " AS registered FROM events e WHERE e.id = ?",
-        (event_id,),
-    ).fetchone()
+    row: sqlite3.Row | None = db.execute(f"{_SELECT_EVENTS} WHERE e.id = ?", (event_id,)).fetchone()
     return row
+
+
+def list_events(db: sqlite3.Connection) -> list[sqlite3.Row]:
+    return db.execute(_SELECT_EVENTS).fetchall()
+
+
+def agenda(events: Iterable[sqlite3.Row]) -> list[tuple[str, list[sqlite3.Row]]]:
+    """Group by date in each event's own timezone: days ascending, events by start within a day.
+
+    Grouping first (not sorting by UTC then grouping) keeps headings in order when events
+    use different timezones.
+    """
+    days: dict[date, list[sqlite3.Row]] = {}
+    for event in sorted(events, key=lambda e: str(e["start_utc"])):
+        days.setdefault(_local(event["start_utc"], event["tz"]).date(), []).append(event)
+    return [(_day_label(d), days[d]) for d in sorted(days)]
