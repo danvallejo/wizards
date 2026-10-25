@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}New {{ game.name }} event{% endblock %}
+{% block content %}
+<h1>New {{ game.name }} event</h1>
+<p><a href="/events/new">Change game</a></p>
+{% include "_errors.html" %}
+<form method="post" action="/events">
+  <input type="hidden" name="game" value="{{ game.id }}">
+  <label>Name <input name="name" value="{{ values.name or '' }}" required maxlength="100"></label>
+  <label>Format
+    <select name="format" required>
+      {% for f in game.formats %}<option{% if values.format == f %} selected{% endif %}>{{ f }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Date <input type="date" name="date" value="{{ values.date or '' }}" required></label>
+  <label>Start time <input type="time" name="time" value="{{ values.time or '' }}" required></label>
+  <label>Timezone <input name="timezone" value="{{ values.timezone }}" required></label>
+  <label>Duration (minutes) <input type="number" name="duration_min" value="{{ values.duration_min }}" min="1" max="1440"></label>
+  <label>Capacity (max {{ game.max_capacity }}) <input type="number" name="capacity" value="{{ values.capacity }}" min="1" max="{{ game.max_capacity }}" required></label>
+  <label>Location <input name="location" value="{{ values.location }}" required></label>
+  <button type="submit">Create event</button>
+</form>
+{% endblock %}

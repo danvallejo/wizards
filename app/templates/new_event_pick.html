@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}New event{% endblock %}
+{% block content %}
+<h1>New event</h1>
+{% include "_errors.html" %}
+<p>Choose a game:</p>
+<ul>
+  {% for g in games %}<li><a href="/events/new?game={{ g.id }}">{{ g.name }}</a></li>{% endfor %}
+</ul>
+{% endblock %}

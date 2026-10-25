@@ -20,3 +20,5 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+# Any warning fails the suite, including unclosed sqlite connections (ResourceWarning).
+filterwarnings = ["error"]

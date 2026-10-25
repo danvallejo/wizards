@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ event.name }}{% endblock %}
+{% block content %}
+<h1>{{ event.name }}</h1>
+<p>{{ event.game_name }} · {{ event.format }}</p>
+{% set start_day = event.start_utc | local_day(event.tz) %}
+{% set end_day = event.end_utc | local_day(event.tz) %}
+<p>{{ start_day }}, {{ event.start_utc | local_time(event.tz) }} – {% if end_day != start_day %}{{ end_day }}, {% endif %}{{ event.end_utc | local_time(event.tz) }}</p>
+<p>{{ event.location }}</p>
+<p>{{ event.registered }} / {{ event.capacity }} registered</p>
+{% if event.registered < event.min_players %}
+<p>Needs {{ event.min_players }} players to start</p>
+{% else %}
+<p>Enough players to start</p>
+{% endif %}
+{% endblock %}

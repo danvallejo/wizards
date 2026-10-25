@@ -32,6 +32,48 @@ MUTANTS: list[tuple[str, str, str, str]] = [
         "if False:",
         "non-table game entry check dropped",
     ),
+    (
+        "app/events.py",
+        'capacity = _int_in_range(form.get("capacity", ""), 1, game.max_capacity)',
+        'capacity = _int_in_range(form.get("capacity", ""), 1, 30)',
+        "capacity ceiling hardcoded instead of template max",
+    ),
+    (
+        "app/events.py",
+        "if fmt not in game.formats:",
+        "if not fmt:",
+        "format not checked against the game's list",
+    ),
+    (
+        "app/events.py",
+        "    if early != late:",
+        "    if False:",
+        "DST gap/overlap silently accepted",
+    ),
+    (
+        "app/events.py",
+        "end = start + timedelta(minutes=duration or 0)",
+        "end = start + timedelta(minutes=game.default_duration_min)",
+        "duration override ignored",
+    ),
+    (
+        "app/events.py",
+        "except OverflowError:  # end (UTC or local) runs past year 9999",
+        "except ZeroDivisionError:  # end (UTC or local) runs past year 9999",
+        "end-time overflow surfaces as a 500",
+    ),
+    (
+        "app/views.py",
+        '    if event is None:\n        abort(404)\n    return render_template("event.html"',
+        '    return render_template("event.html"',
+        "unknown event id not a 404",
+    ),
+    (
+        "app/events.py",
+        "        end.astimezone(ZoneInfo(tz_name))  # the page shows end in local time\n",
+        "",
+        "local end-time range not checked",
+    ),
 ]
 
 

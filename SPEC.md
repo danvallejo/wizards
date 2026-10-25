@@ -188,3 +188,13 @@ Skipped: mutmut, hypothesis (timebox).
 - 2026-10-25 (slice 1, implementation): grep gate is `tools/check_no_game_names.py`, not
   `.sh`. It reads forbidden ids/names from games.toml itself, so new games are covered
   automatically; parsing TOML in shell would be fragile. Same behaviour, fails closed.
+- 2026-10-25 (slice 2, Codex finding): a basic event page (details, count, min-players
+  status) moves from slice 4 into slice 2, so the post-create redirect never lands on a
+  404. Slice 4 adds the QR and .ics to it. Also added: dates whose UTC start or end falls
+  outside year 1..9999 → 400 "Enter a valid date and time" (was a 500).
+- 2026-10-25 (slice 2, Codex findings): event page shows the end date when an event
+  crosses midnight in its own tz. Validation also rejects events whose end can't be
+  shown in local time (year-9999 edge), so creation never redirects to a crashing page.
+- 2026-10-25 (owner instruction, mid slice 2): **commit authorization withdrawn.** From
+  slice 2 on, each slice is staged, then Claude stops and waits for the owner's review
+  and go-ahead before committing. Codex review still runs before staging is handed over.
