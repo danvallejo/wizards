@@ -1,0 +1,22 @@
+[project]
+name = "wizards-events"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+packages = ["app"]
+
+[[tool.mypy.overrides]]
+module = ["qrcode", "qrcode.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

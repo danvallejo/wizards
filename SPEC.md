@@ -22,7 +22,7 @@ and conflicts (decisions below were made with the repo owner on 2026-10-25).
   - `tools/gauntlet.sh` — single entry point; runs every layer, fails closed
   - `tools/mutants.py` — manual mutation runner; proves each mutant was applied
     (file changed) and restored (`git diff --exit-code`)
-  - `tools/check_no_game_names.sh` — grep gate: core event code contains no game names
+  - `tools/check_no_game_names.py` — grep gate: core event code contains no game names
   - `requirements.txt`, `requirements-dev.txt` — exact pinned versions
   - `pyproject.toml` — ruff, mypy, pytest config
 - Runtime dependencies:
@@ -185,3 +185,6 @@ Skipped: mutmut, hypothesis (timebox).
   - #4: DST gap or overlap start times are rejected with 400 (owner answer to the Codex
     finding). Added 2 scenarios.
   - Git: DECISIONS.md is included in every commit while it has changes (owner instruction).
+- 2026-10-25 (slice 1, implementation): grep gate is `tools/check_no_game_names.py`, not
+  `.sh`. It reads forbidden ids/names from games.toml itself, so new games are covered
+  automatically; parsing TOML in shell would be fragile. Same behaviour, fails closed.

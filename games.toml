@@ -1,0 +1,23 @@
+# Game templates. Adding a game = adding a [games.<id>] table; no code change.
+# Every field is required. max_capacity caps what an organizer may set per event.
+
+[games.mtg]
+name = "Magic: The Gathering"
+formats = ["Standard", "Modern", "Commander", "Draft"]
+default_duration_min = 180
+max_capacity = 30
+min_players = 4
+
+[games.pokemon]
+name = "Pokémon TCG"
+formats = ["Standard", "Expanded"]
+default_duration_min = 180
+max_capacity = 30
+min_players = 4
+
+[games.lorcana]
+name = "Disney Lorcana"
+formats = ["Core Constructed", "Infinity Constructed", "Sealed"]
+default_duration_min = 150
+max_capacity = 24
+min_players = 4
