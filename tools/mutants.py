@@ -134,6 +134,54 @@ MUTANTS: list[tuple[str, str, str, str]] = [
         '    now = clock()\n    db.execute("BEGIN IMMEDIATE")\n    try:\n',
         "clock read before taking the write lock",
     ),
+    (
+        "app/views.py",
+        "qr=Markup(qr_svg(url))",
+        'qr=Markup(qr_svg(current_app.config["BASE_URL"]))',
+        "QR encodes the site root, not the registration link",
+    ),
+    (
+        "app/__init__.py",
+        '    if not app.config["BASE_URL"]:\n',
+        "    if True:\n",
+        "BASE_URL setting ignored",
+    ),
+    (
+        "app/views.py",
+        'base: str = current_app.config["BASE_URL"].rstrip("/")',
+        'base: str = current_app.config["BASE_URL"]',
+        "trailing slash in BASE_URL gives a // link",
+    ),
+    (
+        "app/qr.py",
+        '        return "127.0.0.1"',
+        '        return ""',
+        "no-network fallback broken",
+    ),
+    (
+        "app/invite.py",
+        'vevent.add("dtend", parse_iso_utc(event["end_utc"]))',
+        'vevent.add("dtend", parse_iso_utc(event["start_utc"]))',
+        ".ics end equals start",
+    ),
+    (
+        "app/invite.py",
+        'vevent.add("uid", f"{event[\'uid\']}@game-events")',
+        'vevent.add("uid", "event@game-events")',
+        ".ics UID not unique per event",
+    ),
+    (
+        "app/invite.py",
+        'vevent.add("location", event["location"])',
+        'vevent.add("location", "")',
+        ".ics location missing",
+    ),
+    (
+        "app/events.py",
+        "            str(uuid.uuid4()),\n",
+        "            str(event.start),\n",
+        "event uid not random (collides across databases)",
+    ),
 ]
 
 

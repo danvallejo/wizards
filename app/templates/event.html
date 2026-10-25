@@ -13,5 +13,8 @@
 {% else %}
 <p>Enough players to start</p>
 {% endif %}
-<p><a href="/events/{{ event.id }}/register">Register</a></p>
+<p><a href="/events/{{ event.id }}/invite.ics">Add to calendar (.ics)</a></p>
+<h2>Register</h2>
+<p>Scan to register, or open <a href="/events/{{ event.id }}/register">{{ registration_url }}</a></p>
+<div style="max-width: 16rem">{{ qr }}</div>
 {% endblock %}

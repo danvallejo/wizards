@@ -1,4 +1,5 @@
 import sqlite3
+import uuid
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
@@ -145,9 +146,10 @@ def validate_event(
 
 def create_event(db: sqlite3.Connection, event: NewEvent) -> int:
     cur = db.execute(
-        "INSERT INTO events (name, game_id, game_name, min_players, format, capacity,"
-        " tz, start_utc, end_utc, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO events (uid, name, game_id, game_name, min_players, format, capacity,"
+        " tz, start_utc, end_utc, location) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (
+            str(uuid.uuid4()),
             event.name,
             event.game.id,
             event.game.name,

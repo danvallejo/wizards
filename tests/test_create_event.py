@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from tests.conftest import VALID_EVENT, create_event, rows
@@ -14,6 +16,7 @@ def event_count(app):
 def test_create_valid_event(app, client):
     event_id = create_event(client)
     [event] = rows(app, "SELECT * FROM events WHERE id = ?", event_id)
+    assert uuid.UUID(event.pop("uid")).version == 4
     assert event == {
         "id": event_id,
         "name": "Friday Night Magic",

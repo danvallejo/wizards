@@ -16,7 +16,12 @@ NOW = datetime(2026, 10, 25, 12, 0, tzinfo=UTC)
 @pytest.fixture
 def make_app(tmp_path: Path):
     def make(**overrides: Any) -> Flask:
-        config = {"DATABASE": str(tmp_path / "test.db"), "NOW": lambda: NOW}
+        config = {
+            "DATABASE": str(tmp_path / "test.db"),
+            "NOW": lambda: NOW,
+            "BASE_URL": "",  # ignore any BASE_URL in the developer's environment
+            "DETECT_IP": lambda: "10.0.0.5",
+        }
         config.update(overrides)
         return create_app(config)
 

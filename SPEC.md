@@ -200,3 +200,7 @@ Skipped: mutmut, hypothesis (timebox).
   and go-ahead before committing. Codex review still runs before staging is handed over.
 - 2026-10-25 (before slice 4): slices 4 and 5 swap. Registration + capacity lands before
   QR + .ics, so the QR/registration link on the event page never points at a 404.
+- 2026-10-25 (slice 5): fixed a conflict inside this spec. Decision #5 said the format
+  goes in the .ics title, but the .ics scenario says SUMMARY = event name. Followed the
+  scenario: SUMMARY is the event name; game and format go in DESCRIPTION, along with the
+  registration link.

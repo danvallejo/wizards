@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS events (
     id          INTEGER PRIMARY KEY,
+    uid         TEXT    NOT NULL UNIQUE,  -- random; .ics UID, unique across databases
     name        TEXT    NOT NULL,
     game_id     TEXT    NOT NULL,
     -- snapshotted from the template so the event outlives template edits/removal

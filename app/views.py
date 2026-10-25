@@ -1,10 +1,13 @@
 from sqlite3 import Row
 
 from flask import Blueprint, abort, current_app, redirect, render_template, request
+from markupsafe import Markup
 from werkzeug.wrappers import Response
 
 from app.db import get_db
 from app.events import agenda, create_event, get_event, list_events, validate_event
+from app.invite import event_ics
+from app.qr import qr_svg
 from app.registrations import RegistrationRejected, register, unavailable_reason
 
 bp = Blueprint("events", __name__)
@@ -53,7 +56,25 @@ def post_event() -> Response | tuple[str, int]:
 
 @bp.get("/events/<int:event_id>")
 def show_event(event_id: int) -> str:
-    return render_template("event.html", event=_event_or_404(event_id))
+    event = _event_or_404(event_id)
+    url = _registration_url(event_id)
+    return render_template("event.html", event=event, registration_url=url, qr=Markup(qr_svg(url)))
+
+
+@bp.get("/events/<int:event_id>/invite.ics")
+def invite(event_id: int) -> Response:
+    event = _event_or_404(event_id)
+    body = event_ics(event, _registration_url(event_id), current_app.config["NOW"]())
+    return Response(
+        body,
+        mimetype="text/calendar",
+        headers={"Content-Disposition": f'attachment; filename="event-{event_id}.ics"'},
+    )
+
+
+def _registration_url(event_id: int) -> str:
+    base: str = current_app.config["BASE_URL"].rstrip("/")
+    return f"{base}/events/{event_id}/register"
 
 
 def _event_or_404(event_id: int) -> Row:
