@@ -114,3 +114,20 @@ def test_ics_uid_unique_across_databases(make_app, tmp_path):
     (id_a, uid_a), (id_b, uid_b) = first_uid("a.db"), first_uid("b.db")
     assert id_a == id_b == 1
     assert uid_a != uid_b
+
+
+def test_startup_prints_qr_target(make_app, capsys):
+    make_app(DETECT_IP=lambda: "10.2.0.2")
+    err = capsys.readouterr().err
+    assert "QR codes will point to http://10.2.0.2:8000" in err
+    assert "set BASE_URL" in err
+
+
+def test_startup_prints_base_url_when_set(make_app, capsys):
+    make_app(BASE_URL="https://events.example.com")
+    assert "QR codes will point to https://events.example.com" in capsys.readouterr().err
+
+
+def test_event_page_hints_base_url_under_qr(client):
+    html = page(client, create_event(client))
+    assert "set BASE_URL" in html

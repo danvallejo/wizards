@@ -1,4 +1,5 @@
 import os
+import sys
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
@@ -28,6 +29,12 @@ def create_app(overrides: Mapping[str, Any] | None = None) -> Flask:
     app.config.update(overrides or {})
     if not app.config["BASE_URL"]:
         app.config["BASE_URL"] = f"http://{app.config['DETECT_IP']()}:8000"
+    # Detection can pick a VPN/Docker address phones can't reach; say what we chose.
+    print(
+        f"QR codes will point to {app.config['BASE_URL']}. If phones can't open that"
+        " address, set BASE_URL (see README).",
+        file=sys.stderr,
+    )
     app.config["GAMES"] = load_games(Path(app.config["GAMES_FILE"]))
     db.init_app(app)
     app.register_blueprint(views.bp)

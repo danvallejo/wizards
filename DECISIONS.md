@@ -41,7 +41,7 @@ Just reject it. It happens two nights a year. We can fix that later if needed.
 
 # AI Framework
 ## Tools
-Used claude code with /old-timer plugin.
+Used claude code with /old-coder plugin.
 
 Prompt:
 

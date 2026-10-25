@@ -204,3 +204,9 @@ Skipped: mutmut, hypothesis (timebox).
   goes in the .ics title, but the .ics scenario says SUMMARY = event name. Followed the
   scenario: SUMMARY is the event name; game and format go in DESCRIPTION, along with the
   registration link.
+- 2026-10-25 (slice 7, real run): on the owner's machine LAN detection picked the VPN
+  tunnel (utun7 10.2.0.2), not Wi-Fi (en0 10.0.0.101). Owner chose to keep detection and
+  make the choice visible: the server prints the QR target at startup, and the event page
+  hints at BASE_URL under the QR. Real-run reachability of LAN addresses can't be tested
+  from Claude's sandbox (all non-loopback addresses time out), so `tools/real_run.py`
+  checks the QR host equals the detected IP and follows the path via loopback.

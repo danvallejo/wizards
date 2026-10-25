@@ -40,9 +40,17 @@ If you set `DATABASE` to a custom path, delete that file instead.
 ### Scanning the QR code from a phone
 
 The QR code on each event page points at `http://<this machine's LAN IP>:8000/...`,
-detected at startup. With the server on `0.0.0.0` (as above) and the phone on the same
-Wi-Fi, scanning just works. If the detected address is wrong (VPN, Docker, several
-network interfaces), set it explicitly:
+detected at startup, and the server prints the address it chose:
+
+```
+QR codes will point to http://10.0.0.101:8000. If phones can't open that address, set BASE_URL (see README).
+```
+
+With the server on `0.0.0.0` (as above) and the phone on the same Wi-Fi, scanning just
+works. Detection follows the default network route, so with a VPN on it picks the VPN's
+address, which phones can't reach. In that case, or with Docker or several network
+interfaces, set the address explicitly (find your Wi-Fi IP with `ipconfig getifaddr en0`
+on macOS):
 
 ```sh
 BASE_URL=http://192.168.1.20:8000 .venv/bin/flask --app app run --host 0.0.0.0 --port 8000
@@ -69,7 +77,8 @@ tools/gauntlet.sh
 
 `tools/gauntlet.sh` runs lint, format check, type check, the test suite (random order,
 100% line and branch coverage required), a check that core code never names a specific
-game, and the mutation tests.
+game, the mutation tests, and a real run (`tools/real_run.py`) that starts the server
+on port 8000 and walks the whole flow over HTTP. Stop any server on port 8000 first.
 
 ## Design write-up
 
